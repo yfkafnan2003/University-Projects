@@ -72,7 +72,7 @@ void saveComplaint(struct Complaint c) {
 void registerUser() {
     if (userCount >= 100) return;
     struct User u;
-    printf("\n\t\tRegistration\t\t\n");
+    printf("\n\t\t||Registration||\t\t\n");
     printf("Username: ");
     scanf("%19s", u.username);
     printf("Password: ");
@@ -103,23 +103,29 @@ void fileComplaint(char *username) {
     struct Complaint c;
     c.id = complaintCount + 1;
     strcpy(c.username, username);
+
     printf("\n\t\tFile a Complaint\t\t\n");
     printf("Complaint type: ");
     scanf("%29s", c.type);
+    getchar();  // Consume newline left by previous scanf
+
     printf("Description: ");
-    scanf(" %[^\"]", c.description);
+    fgets(c.description, sizeof(c.description), stdin);
+    c.description[strcspn(c.description, "\n")] = 0;  // Remove trailing newline
+
     strcpy(c.status, "Pending");
     complaints[complaintCount++] = c;
     saveComplaint(c);
     printf("Complaint filed successfully!\n\n");
 }
 
+
 void viewComplaints(char *username) {
     int found = 0;
     printf("\n\t\tYour Complaints\t\t\n");
     for (int i = 0; i < complaintCount; i++) {
         if (strcmp(complaints[i].username, username) == 0) {
-            printf("ID: %d\nType: %s\nDescription: %s\nStatus: %s\n\n",
+            printf("ID: %d\nType: %s\nDescription:%s\nStatus:%s\n\n",
                    complaints[i].id, complaints[i].type, complaints[i].description, complaints[i].status);
             found = 1;
         }
@@ -191,10 +197,10 @@ void adminPanel() {
 }
 
 void showHeader() {
-    printf("\n\t\t\t |_________________|\n");
+    printf("\n\t\t\t _______________________________________________\n");
     printf("\t\t\t|                                               |\n");
     printf("\t\t\t|        COMPLAINT MANAGEMENT SYSTEM            |\n");
-    printf("\t\t\t|_________________|\n\n");
+    printf("\t\t\t|_______________________________________________|\n\n");
 }
 
 int main() {
@@ -207,7 +213,7 @@ int main() {
 
     while (1) {
         showHeader();
-        printf("1. Register as User\n2. Login as User\n3. Login as Staff\n4. Login as Admin\n5. Exit\nChoice: ");
+        printf("1. Register \n2. Login\n3. Login as Staff\n4. Login as Admin\n5. Exit\nChoice: ");
         scanf("%d", &choice);
 
         if (choice == 1) {
