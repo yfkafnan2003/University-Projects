@@ -1,0 +1,351 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#define CONSOLE_WIDTH 100  
+#define MAX_USERNAME 50
+#define MAX_PASSWORD 50
+
+void clearScreen() {
+    #ifdef _WIN32
+        system("cls");
+    #else
+        system("clear");
+    #endif
+}
+
+void printCenter(const char *format, ...) {
+    char buffer[512];
+    va_list args;
+    va_start(args, format);
+    vsnprintf(buffer, sizeof(buffer), format, args);
+    va_end(args);
+
+    int len = strlen(buffer);
+    int padding = (CONSOLE_WIDTH - len) / 2;
+    if (padding < 0) padding = 0;
+
+    for (int i = 0; i < padding; i++) printf(" ");
+    printf("%s\n", buffer);
+}
+void inputCenter(const char *format, ...) {
+    char buffer[512];
+    va_list args;
+    va_start(args, format);
+    vsnprintf(buffer, sizeof(buffer), format, args);
+    va_end(args);
+
+    int len = strlen(buffer);
+    int padding = (CONSOLE_WIDTH - len) / 2;
+    if (padding < 0) padding = 0;
+
+    for (int i = 0; i < padding; i++) printf(" ");
+    printf("%s", buffer); // no newline here!
+}
+
+struct User {
+    char username[20];
+    char password[20];
+    char role[10];
+    char phone[15];
+    char nid[20];
+    char email[50];
+    char address[100];
+};
+
+struct Complaint {
+    int id;
+    char username[20];
+    char type[30];
+    char description[100];
+    char status[10];
+};
+
+struct User users[100];
+int userCount = 0;
+struct Complaint complaints[100];
+int complaintCount = 0;
+
+void loadUsers() {
+    FILE *fp = fopen("users.txt", "r");
+    if (fp) {
+        while (fscanf(fp, "%s %s %s %s %s %s %[^\n]",
+                      users[userCount].username,
+                      users[userCount].password,
+                      users[userCount].role,
+                      users[userCount].phone,
+                      users[userCount].nid,
+                      users[userCount].email,
+                      users[userCount].address) != EOF) {
+            userCount++;
+        }
+        fclose(fp);
+    } else {
+        FILE *fpw = fopen("users.txt", "w");
+        fprintf(fpw, "Afnan 12345 admin 01700000000 1234567890 afnan@example.com Dhaka\n");
+        fprintf(fpw, "faruk 67890 staff 01800000000 9876543210 faruk@example.com Chittagong\n");
+        fclose(fpw);
+
+        strcpy(users[0].username, "Afnan"); strcpy(users[0].password, "12345"); strcpy(users[0].role, "admin");
+        strcpy(users[0].phone, "01700000000"); strcpy(users[0].nid, "1234567890");
+        strcpy(users[0].email, "afnan@example.com"); strcpy(users[0].address, "Dhaka");
+
+        strcpy(users[1].username, "faruk"); strcpy(users[1].password, "67890"); strcpy(users[1].role, "staff");
+        strcpy(users[1].phone, "01800000000"); strcpy(users[1].nid, "9876543210");
+        strcpy(users[1].email, "faruk@example.com"); strcpy(users[1].address, "Chittagong");
+
+        userCount = 2;
+    }
+}
+
+void saveUser(struct User u) {
+    FILE *fp = fopen("users.txt", "a");
+    if (fp) {
+        fprintf(fp, "%s %s %s %s %s %s %s\n",
+                u.username, u.password, u.role,
+                u.phone, u.nid, u.email, u.address);
+        fclose(fp);
+    }
+}
+
+void loadComplaints() {
+    FILE *fp = fopen("complaints.txt", "r");
+    if (fp) {
+        while (fscanf(fp, "%d %s %s %[^ ] %s",
+                      &complaints[complaintCount].id,
+                      complaints[complaintCount].username,
+                      complaints[complaintCount].type,
+                      complaints[complaintCount].description,
+                      complaints[complaintCount].status) != EOF) {
+            complaintCount++;
+        }
+        fclose(fp);
+    }
+}
+
+void saveComplaint(struct Complaint c) {
+    FILE *fp = fopen("complaints.txt", "a");
+    if (fp) {
+        fprintf(fp, "%d %s %s %s %s\n", c.id, c.username, c.type, c.description, c.status);
+        fclose(fp);
+    }
+}
+
+void registerUser() {
+    if (userCount >= 100) return;
+    struct User u;
+    printCenter("||Registration||");
+    inputCenter("Username: ");
+    scanf("%19s", u.username);
+    inputCenter("Password: ");
+    scanf("%19s", u.password);
+    inputCenter("Phone Number: ");
+    scanf("%14s", u.phone);
+    inputCenter("NID Number: ");
+    scanf("%19s", u.nid);
+    inputCenter("Email: ");
+    scanf("%49s", u.email);
+    getchar();
+    inputCenter("Address: ");
+    fgets(u.address, sizeof(u.address), stdin);
+    u.address[strcspn(u.address, "\n")] = 0;
+
+    strcpy(u.role, "user");
+    users[userCount++] = u;
+    saveUser(u);
+    printCenter("User registered successfully!\n\n");
+}
+
+int login(char *username, char *roleOut) {
+    char pass[20];
+    printCenter("Login");
+    inputCenter("Username: ");
+    scanf("%19s", username);
+    inputCenter("Password: ");
+    scanf("%19s", pass);
+    for (int i = 0; i < userCount; i++) {
+        if (strcmp(users[i].username, username) == 0 && strcmp(users[i].password, pass) == 0) {
+            strcpy(roleOut, users[i].role);
+            return 1;
+        }
+    }
+    return 0;
+}
+
+
+void fileComplaint(char *username) {
+    if (complaintCount >= 100) return;
+    struct Complaint c;
+    c.id = complaintCount + 1;
+    strcpy(c.username, username);
+
+    printCenter("File a Complaint");
+    inputCenter("Complaint type: ");
+    scanf("%29s", c.type);
+    getchar();
+    inputCenter("Description: ");
+    fgets(c.description, sizeof(c.description), stdin);
+    c.description[strcspn(c.description, "\n")] = 0;
+
+    strcpy(c.status, "Pending");
+    complaints[complaintCount++] = c;
+    saveComplaint(c);
+    printCenter("Complaint filed successfully!\n\n");
+}
+
+void viewComplaints(char *username) {
+    int found = 0;
+    printf("Your Complaints");
+    for (int i = 0; i < complaintCount; i++) {
+        if (strcmp(complaints[i].username, username) == 0) {
+            printCenter("ID: %d\nType: %s\nDescription: %s\nStatus: %s\n\n",
+                   complaints[i].id, complaints[i].type, complaints[i].description, complaints[i].status);
+            found = 1;
+        }
+    }
+    if (!found) printCenter("No complaints found.\n\n");
+}
+
+void viewProfile(char *username) {
+    for (int i = 0; i < userCount; i++) {
+        if (strcmp(users[i].username, username) == 0) {
+            printCenter("My Profile");
+            printCenter("Username: %s\n", users[i].username);
+            printCenter("Role: %s\n", users[i].role);
+            printCenter("Phone: %s\n", users[i].phone);
+            printCenter("NID: %s\n", users[i].nid);
+            printCenter("Email: %s\n", users[i].email);
+            printCenter("Address: %s\n", users[i].address);
+            return;
+        }
+    }
+    printCenter("Profile not found.\n");
+}
+
+void staffPanel() {
+    int id;
+    char status[10];
+    printCenter("\n\t\tAll Complaints \t\t\n");
+    for (int i = 0; i < complaintCount; i++) {
+        printCenter("ID: %d\nUser: %s\nType: %s\nDescription: %s\nStatus: %s\n\n",
+               complaints[i].id, complaints[i].username, complaints[i].type, complaints[i].description, complaints[i].status);
+    }
+    inputCenter("Enter complaint ID to update status (0 to skip): ");
+    scanf("%d", &id);
+    if (id > 0 && id <= complaintCount) {
+        printCenter("Enter new status (Approved/Denied/Pending): ");
+        scanf("%9s", status);
+        strcpy(complaints[id - 1].status, status);
+        FILE *fp = fopen("complaints.txt", "w");
+        for (int i = 0; i < complaintCount; i++) {
+            fprintf(fp, "%d %s %s %s %s\n",
+                    complaints[i].id, complaints[i].username, complaints[i].type,
+                    complaints[i].description, complaints[i].status);
+        }
+        fclose(fp);
+        printCenter("Status updated.\n");
+    }
+}
+
+void adminPanel() {
+    int choice;
+    struct User staff;
+    printCenter("Admin Panel");
+    inputCenter("1. Add Staff\n2. Remove Staff\n3. Generate Report\n4. Configure System Rules\nChoice: ");
+    scanf("%d", &choice);
+    if (choice == 1) {
+        printCenter("Enter staff username: ");
+        scanf("%19s", staff.username);
+        printCenter("Enter staff password: ");
+        scanf("%19s", staff.password);
+        printCenter("Phone Number: ");
+        scanf("%14s", staff.phone);
+        printCenter("NID Number: ");
+        scanf("%19s", staff.nid);
+        printCenter("Email: ");
+        scanf("%49s", staff.email);
+        getchar();
+        printCenter("Address: ");
+        fgets(staff.address, sizeof(staff.address), stdin);
+        staff.address[strcspn(staff.address, "\n")] = 0;
+
+        strcpy(staff.role, "staff");
+        users[userCount++] = staff;
+        saveUser(staff);
+        printCenter("Staff added successfully.\n");
+    } else if (choice == 2) {
+        char delname[20];
+        printCenter("Enter staff username to remove: ");
+        scanf("%19s", delname);
+        FILE *fp = fopen("users.txt", "w");
+        int newCount = 0;
+        for (int i = 0; i < userCount; i++) {
+            if (strcmp(users[i].username, delname) == 0 && strcmp(users[i].role, "staff") == 0) continue;
+            fprintf(fp, "%s %s %s %s %s %s %s\n",
+                    users[i].username, users[i].password, users[i].role,
+                    users[i].phone, users[i].nid, users[i].email, users[i].address);
+            users[newCount++] = users[i];
+        }
+        userCount = newCount;
+        fclose(fp);
+        printCenter("Staff removed successfully.\n");
+    } else if (choice == 3) {
+        printCenter("Generating report... (not implemented)\n");
+    } else if (choice == 4) {
+        printCenter("Configuring system rules... (not implemented)\n");
+    } else {
+        printCenter("Invalid choice.\n");
+    }
+}
+
+void showHeader() {
+    clearScreen();
+    printCenter("██████╗███╗   ███╗███████╗");
+    printCenter("██╔════╝████╗ ████║██╔════╝");
+    printCenter("██║     ██╔████╔██║███████╗");
+    printCenter("██║     ██║╚██╔╝██║╚════██║");
+    printCenter("╚██████╗██║ ╚═╝ ██║███████║");
+    printCenter(" ╚═════╝╚═╝     ╚═╝╚══════╝");
+    printf("\n");
+    printCenter("______________________________________________");
+    printCenter("|                                            |");
+    printCenter("|         COMPLAINT MANAGEMENT SYSTEM        |");
+    printCenter("|____________________________________________|");
+    printf("\n");
+}
+
+int main() {
+    int choice;
+    char currentUser[20];
+    char currentRole[10];
+
+    loadUsers();
+    loadComplaints();
+
+while (1) {
+    showHeader();
+    printCenter("1. Register");
+    printCenter("2. Login");
+    printCenter("3. Exit\n");
+    inputCenter("Choice: ");
+    scanf("%d", &choice);
+
+    clearScreen(); // Clear before going to the chosen section
+
+    if (choice == 1) {
+        registerUser();
+    }
+    else if (choice == 2) {
+        if (login(currentUser, currentRole)) {
+            clearScreen();
+            printCenter("Login successful!");
+            printCenter("Role: %s\n\n", currentRole);
+            // rest of dashboard...
+        }
+    }
+    else if (choice == 3) {
+        printCenter("Goodbye!");
+        break;
+    }
+}
+}
