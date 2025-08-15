@@ -1,2 +1,3 @@
 # Data Structure Project
-======== Snake Game ====== By Afnan
+======== Snake Game ====== 
+                  By Afnan
