@@ -4,11 +4,54 @@
 #define ROWS 20
 #define COLS 10
 
+struct Node {
+    int x, y;
+    struct Node *next;
+};
+
 int gameOver;
 int x, y, fruitX, fruitY, Your_score;
-int tailX[100], tailY[100];
-int tailLength;
 char direction;
+struct Node *snake = NULL; 
+
+void addTail(int tx,int ty){
+    struct Node *newNode=malloc(sizeof(struct Node));
+    newNode->x = tx;
+    newNode->y = ty;
+    newNode->next = snake;
+    snake = newNode;
+}
+
+void removeLast() {
+    if (!snake || !snake->next) return;
+    struct Node *temp = snake;
+    struct Node *prev = NULL;
+    while (temp->next) {
+        prev = temp;
+        temp = temp->next;
+    }
+    prev->next = NULL;
+    free(temp);
+}
+
+int snakeLength() {
+    int count = 0;
+    struct Node *temp = snake;
+    while (temp) {
+        count++;
+        temp = temp->next;
+    }
+    return count;
+}
+
+int isSnakeHere(int cx, int cy) {
+    struct Node *temp = snake;
+    while (temp) {
+        if (temp->x == cx && temp->y == cy) return 1;
+        temp = temp->next;
+    }
+    return 0;
+}
 
 void setupGame() {
     gameOver = 0;
@@ -18,7 +61,8 @@ void setupGame() {
     fruitX = rand() % ROWS;
     fruitY = rand() % COLS;
     Your_score = 0;
-    tailLength = 0;
+    while (snake) { struct Node*tmp =snake;snake =snake->next;free(tmp);}
+    addTail(x, y);
 }
 
 void drawScreen() {
@@ -36,17 +80,10 @@ void drawScreen() {
                 printf("O"); 
             else if (i == fruitY && j == fruitX)
                 printf("*");
-            else {
-                int print = 0;
-                for (int k=0; k< tailLength;k++) {
-                    if (tailX[k] == j && tailY[k] == i) {
-                        printf("o");
-                        print = 1;
-                        break;
-                    }
-                }
-                if (!print) printf(" ");
-            }
+            else if (isSnakeHere(j,i))
+                printf("o");
+            else
+                printf(" ");
 
             if (j == ROWS - 1) printf("#");
         }
@@ -59,8 +96,8 @@ void drawScreen() {
 
 void inputControl() {
     char c;
-    if (scanf(" %c",&c)) {
-        if (c == 'w'|| c== 'a' || c =='s'|| c== 'd')
+    if (scanf(" %c",&c)){
+        if (c =='w' ||c== 'a' ||c =='s'||c=='d' )
             direction = c;
         else if (c == 'x')
             gameOver = 1;
@@ -68,37 +105,23 @@ void inputControl() {
 }
 
 void gameLogic() {
-    int prevX = tailX[0];
-    int prevY = tailY[0];
-    int prev2X, prev2Y;
-    tailX[0] = x;
-    tailY[0] = y;
-    for (int i=1;i <tailLength; i++) {
-        prev2X = tailX[i];
-        prev2Y = tailY[i];
-        tailX[i] = prevX;
-        tailY[i] = prevY;
-        prevX = prev2X;
-        prevY = prev2Y;
-    }
-
+    int prevX = x, prevY = y;
     if (direction == 'w') y--;
     else if (direction == 's') y++;
     else if (direction == 'a') x--;
     else if (direction == 'd') x++;
 
-    if (x<0 ||x >= ROWS|| y<0 ||y >=COLS)
-        gameOver = 1;
+    if (x<0 ||x >= ROWS|| y<0 ||y >=COLS) gameOver = 1;
+    if (isSnakeHere(x, y)) gameOver = 1;
 
-    for (int i =0; i< tailLength;i++)
-        if (tailX[i]== x&& tailY[i] ==y)
-            gameOver = 1;
+    addTail(prevX, prevY);
 
     if (x == fruitX && y == fruitY) {
         Your_score += 10;
         fruitX = rand() % ROWS;
         fruitY = rand() % COLS;
-        tailLength++;
+    } else {
+        removeLast();
     }
 }
 
