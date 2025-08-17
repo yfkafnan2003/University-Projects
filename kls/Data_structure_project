@@ -1,0 +1,220 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+struct product{
+    int id;
+    char name[50];
+    float price;
+};
+struct product products[100];
+int productcount =0;
+struct customer{
+    char username[50];
+    char password[50];
+    struct customer *next;
+};
+struct customer *customerhead=NULL;
+struct order{
+    char username[50];
+    int productid;
+};
+struct order orderqueue[100];
+int front=-1,rear =-1;
+struct orderhistory{
+    char username[50];
+    int productid;
+};
+struct orderhistory historystack[100];
+int top=-1;
+void addproduct(char name[],float price);
+void displayproducts();
+void registercustomer(char username[],char password[]);
+int logincustomer(char username[],char password[]);
+void enqueueorder(char username[], int productid);
+void processorder();
+void pushhistory(char username[],int productid);
+void viewhistory();
+void adminmenu();
+void usermenu(char username[]);
+void addproduct(char name[],float price) {
+    products[productcount].id =productcount+1;
+    strcpy(products[productcount].name,name);
+    products[productcount].price=price;
+    productcount++;
+}
+void displayproducts(){
+    printf("\navailable products:\n");
+    for (int i=0;i <productcount;i++) {
+        printf("%d. %s - $%.2f\n", products[i].id,products[i].name ,products[i].price);
+    }
+}
+void registercustomer(char username[] ,char password[]){
+    struct customer*newcust =(struct customer*)malloc(sizeof(struct customer));
+    strcpy(newcust->username,username);
+    strcpy(newcust->password,password);
+    newcust->next=customerhead;
+    customerhead =newcust;
+    printf("registration successful!\n");
+}
+int logincustomer(char username[],char password[]){
+    struct customer *temp=customerhead;
+    while (temp !=NULL){
+        if (strcmp(temp->username,username)==0&&strcmp(temp->password, password)==0){
+            return 1;
+        }
+        temp=temp->next;
+    }
+    return 0;
+}
+void enqueueorder(char username[] ,int productid){
+    if (rear==99){
+        printf("order queue is full!\n");
+        return;
+    }
+    if (front==-1) front=0;
+    rear++;
+    strcpy(orderqueue[rear].username,username);
+    orderqueue[rear].productid = productid;
+    printf("order placed successfully!\n");
+}
+void processorder(){
+    if (front==-1){
+        printf("no orders to process.\n");
+        return;
+    }
+    struct order order=orderqueue[front];
+    printf("processing order for %s: %s\n", order.username, products[order.productid - 1].name);
+    pushhistory(order.username, order.productid);
+    if (front==rear){
+        front =rear=-1;
+    } else {
+        front++;
+    }
+}
+void pushhistory(char username[] ,int productid){
+    if (top==99){
+        printf("history is full!\n");
+        return;
+    }
+    top++;
+    strcpy(historystack[top].username,username);
+    historystack[top].productid=productid;
+}
+void viewhistory(){
+    if (top ==-1){
+        printf("no order history.\n");
+        return;
+    }
+    printf("\norder history:\n");
+    for (int i=top;i >=0 ;i--){
+        printf("%s bought %s\n", historystack[i].username, products[historystack[i].productid - 1].name);
+    }
+}
+void adminmenu(){
+    int choice;
+    char name[50];
+    float price;
+    while (1){
+        printf("\n===Admin menu===\n");
+        printf("1. Add product\n");
+        printf("2. Process order\n");
+        printf("3. view history\n");
+        printf("4. logout\n");
+        printf("choice: ");
+        scanf("%d", &choice);
+        getchar();
+        if (choice==1){
+            printf("enter product name : ");
+            fgets(name,sizeof(name),stdin);
+            name[strcspn(name,"\n")]=0;
+            printf("enter price: ");
+            scanf("%f",&price);
+            addproduct(name,price);
+        } else if (choice==2){
+            processorder();
+        } else if (choice==3){
+            viewhistory();
+        } else if (choice==4){
+            break;
+        } else {
+            printf("invalid choice!\n");
+        }
+    }
+}
+void usermenu(char username[]){
+    int choice,pid;
+    while (1){
+        printf("\n===User menu===\n");
+        printf("1. view products\n");
+        printf("2. place order\n");
+        printf("3. view history\n");
+        printf("4. logout\n");
+        printf("choice:");
+        scanf("%d",&choice);
+        if (choice==1){
+            displayproducts();
+        } else if (choice== 2){
+            displayproducts();
+            printf("enter product id: ");
+            scanf("%d",&pid);
+            enqueueorder(username, pid);
+        } else if (choice==3){
+            viewhistory();
+        } else if (choice==4){
+            break;
+        } else {
+            printf("invalid choice!\n");
+        }
+    }
+}
+int main(){
+    int choice;
+    char username[50],password[50];
+    while (1) {
+        printf("\n=== Shop online ===\n");
+        printf("1. Admin login\n");
+        printf("2. Register\n");
+        printf("3. User login\n");
+        printf("4. Exit\n");
+        printf("choice: ");
+        scanf("%d",&choice);
+        getchar();
+        if (choice==1){
+            printf("enter admin username: ");
+            scanf("%s" ,username);
+            printf("enter password: ");
+            scanf("%s",password);
+            if (strcmp(username,"admin")==0&& strcmp(password,"admin")==0){
+                adminmenu();
+            } else {
+                printf("invalid admin credentials.\n");
+            }
+        }
+        else if (choice==2){
+            printf("enter username: ");
+            scanf("%s", username);
+            printf("enter password: ");
+            scanf("%s",password);
+            registercustomer(username,password);
+        }
+        else if (choice==3) {
+            printf("enter username: ");
+            scanf("%s",username);
+            printf("enter password:");
+            scanf("%s",password);
+            if (logincustomer(username,password)){
+                usermenu(username);
+            } else {
+                printf("invalid login.\n");
+            }
+        }
+        else if (choice ==4) {
+            printf("exiting.\n");
+            break;
+        }
+        else {
+            printf("invalid choice!\n");
+        }
+    }
+    return 0;
+}
