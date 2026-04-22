@@ -1,0 +1,555 @@
+1.#include <iostream>
+#include <algorithm>
+using namespace std;
+int find_median(int arr[], int size) {
+for (int i = 0; i < size - 1; i++) {
+int min_idx = i;
+for (int j = i + 1; j < size; j++) {
+if (arr[j] < arr[min_idx]) {
+min_idx = j;
+}
+}
+swap(arr[i], arr[min_idx]);
+}
+return arr[(size - 1) / 2];
+}
+int main() {
+int arr1[] = {7, 2, 10, 9, 1};
+int size1 = sizeof(arr1) / sizeof(arr1[0]);
+cout << find_median(arr1, size1) << endl;
+int arr2[] = {4, 1, 8, 3};
+int size2 = sizeof(arr2) / sizeof(arr2[0]);
+cout << find_median(arr2, size2) << endl;
+return 0;
+}
+2. #include<iostream>
+#include <algorithm>
+using namespace std;
+int find_kth_largest(int *arr, int size, int k) {
+for (int i = 0; i < k; ++i) {
+for (int j = 0; j < size - i - 1; ++j) {
+if (arr[j] > arr[j + 1]) {
+swap(arr[j], arr[j + 1]);
+}
+}
+}
+return arr[size - k];
+}
+int main() {
+int arr1[] = {3, 1, 7, 4, 9, 2};
+int size1 = sizeof(arr1) / sizeof(arr1[0]);
+cout << find_kth_largest(arr1, size1, 2) << endl;
+int arr2[] = {10, 5, 8, 3};
+int size2 = sizeof(arr2) / sizeof(arr2[0]);
+cout << find_kth_largest(arr2, size2, 4) << endl;
+return 0;
+}
+3. #include <iostream>
+using namespace std;
+void merge_sorted(int *a, int n, int *b, int m, int *out) {
+int out_size = 0;
+for (int i = 0; i < n; ++i) {
+int j = out_size - 1;
+while (j >= 0 && out[j] > a[i]) {
+out[j + 1] = out[j];
+j--; }
+out[j + 1] = a[i];
+out_size++; }
+for (int i = 0; i < m; ++i) {
+int j = out_size - 1;
+while (j >= 0 && out[j] > b[i]) {
+out[j + 1] = out[j];
+j--; }
+out[j + 1] = b[i];
+out_size++;
+}}
+int main() {
+int a[] = {5, 1, 9};
+int b[] = {3, 7, 2, 6};
+int out[7];
+merge_sorted(a, 3, b, 4, out);
+for (int i = 0; i < 7; i++) {
+cout << out[i] << " "; }
+return 0;}
+4.1. #include <iostream>
+using namespace std;
+long long factorial(int n) {
+if (n <= 1) return 1;
+return n * factorial(n - 1);
+}
+int main() {
+cout << factorial(0) << endl;
+cout << factorial(5) << endl;
+cout << factorial(10) << endl;
+return 0;
+}
+4.2 .
+#include <iostream>
+using namespace std;
+long long fibonacci(int n) {
+if (n <= 0) return 0;
+if (n == 1) return 1;
+return fibonacci(n - 1) + fibonacci(n - 2);
+}
+int main() {
+cout << fibonacci(0) << endl;
+cout << fibonacci(7) << endl;
+cout << fibonacci(10) << endl;
+return 0;
+}
+4.3 . #include <iostream>
+using namespace std;
+int count_digits(int n) {
+if (n < 10) return 1;
+return 1 + count_digits(n / 10);
+}
+int main() {
+cout << count_digits(0) << endl;
+cout << count_digits(9) << endl;
+cout << count_digits(100) << endl;
+cout << count_digits(98765) << endl;
+return 0;
+}
+4.4
+include <iostream>
+using namespace std;
+double power(double base, int exp) {
+if (exp == 0) return 1.0;
+if (exp % 2 == 0) {
+double half = power(base, exp / 2);
+return half * half;
+} else {
+return base * power(base, exp - 1);
+}
+}
+int main() {
+cout << power(2.0, 0) << endl;
+cout << power(3.0, 4) << endl;
+cout << power(2.5, 3) << endl;
+return 0;
+}
+4.5 #include <iostream>
+using namespace std;
+int is_palindrome(const char *str, int left, int right) {
+if (left >= right) return 1;
+if (str[left] != str[right]) return 0;
+return is_palindrome(str, left + 1, right - 1);
+}
+int main() {
+cout << is_palindrome("racecar", 0, 6) << endl;
+cout << is_palindrome("hello", 0, 4) << endl;
+cout << is_palindrome("a", 0, 0) << endl;
+cout << is_palindrome("abba", 0, 3) << endl;
+return 0;
+}
+4.6 #include <iostream>
+using namespace std;
+int array_sum(int *arr, int size) {
+if (size <= 0) return 0;
+return arr[size - 1] + array_sum(arr, size - 1);
+}
+int main() {
+int arr1[] = {1, 2, 3, 4, 5};
+int arr2[] = {-3, 7, 0};
+int arr3[] = {42};
+cout << array_sum(arr1, 5) << endl;
+cout << array_sum(arr2, 3) << endl;
+cout << array_sum(arr3, 1) << endl;
+return 0;
+}
+4.7
+#include <iostream>
+using namespace std;
+int array_max(int *arr, int size) {
+if (size == 1) return arr[0];
+int sub_max = array_max(arr, size - 1);
+return (arr[size - 1] > sub_max) ? arr[size - 1] : sub_max;
+}
+int main() {
+int arr1[] = {3, 1, 9, 2, 7};
+int arr2[] = {-5, -1, -8};
+int arr3[] = {42};
+cout << array_max(arr1, 5) << endl;
+cout << array_max(arr2, 3) << endl;
+cout << array_max(arr3, 1) << endl;
+return 0;
+}
+4.8
+#include <iostream>
+using namespace std;
+int binary_search(int *arr, int left, int right, int target) {
+if (left > right) return -1;
+int mid = left + (right - left) / 2;
+if (arr[mid] == target) return mid;
+if (arr[mid] > target) return binary_search(arr, left, mid - 1, target);
+return binary_search(arr, mid + 1, right, target);
+}
+int main() {
+int arr[] = {1, 3, 5, 7, 9};
+cout << binary_search(arr, 0, 4, 7) << endl;
+cout << binary_search(arr, 0, 4, 4) << endl;
+cout << binary_search(arr, 0, 0, 2) << endl; // Requires array {2}
+return 0;
+}
+5. #include <iostream>
+using namespace std;
+void merge(int *arr, int left, int mid, int right) {
+int n1 = mid - left + 1;
+int n2 = right - mid;
+int *L = new int[n1];
+int *R = new int[n2];
+for (int i = 0; i < n1; i++) L[i] = arr[left + i];
+for (int j = 0; j < n2; j++) R[j] = arr[mid + 1 + j];
+int i = 0, j = 0, k = left;
+while (i < n1 && j < n2) {
+if (L[i] <= R[j]) arr[k++] = L[i++];
+else arr[k++] = R[j++];
+}
+while (i < n1) arr[k++] = L[i++];
+while (j < n2) arr[k++] = R[j++];
+delete[] L; delete[] R;
+}
+void merge_sort(int *arr, int left, int right) {
+if (left < right) {
+int mid = left + (right - left) / 2;
+merge_sort(arr, left, mid);
+merge_sort(arr, mid + 1, right);
+merge(arr, left, mid, right);
+}
+}
+int main() {
+int arr[] = {38, 27, 43, 3, 9, 82, 10};
+int n = sizeof(arr) / sizeof(arr[0]);
+merge_sort(arr, 0, n - 1);
+for (int i = 0; i < n; i++) cout << arr[i] << " ";
+return 0;
+}
+6. #include <iostream>
+using namespace std;
+int total_swaps = 0;
+int partition(int *arr, int low, int high) {
+int pivot = arr[high];
+int i = low - 1;
+for (int j = low; j < high; j++) {
+if (arr[j] < pivot) {
+i++;
+swap(arr[i], arr[j]);
+total_swaps++;
+}
+}
+swap(arr[i + 1], arr[high]);
+return i + 1;
+}
+void quick_sort(int *arr, int low, int high) {
+if (low < high) {
+int pi = partition(arr, low, high);
+quick_sort(arr, low, pi - 1);
+quick_sort(arr, pi + 1, high);
+}
+}
+int main() {
+int arr[] = {10, 7, 8, 9, 1, 5};
+int n = sizeof(arr) / sizeof(arr[0]);
+quick_sort(arr, 0, n - 1);
+for (int i = 0; i < n; i++) cout << arr[i] << " ";
+return 0;
+}
+7.
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <iomanip>
+using namespace std;
+typedef struct { int weight; int value; } Item;
+double fractional_knapsack(Item *items, int n, int capacity) {
+vector<pair<double, int>> ratios;
+for (int i = 0; i < n; i++) ratios.push_back({(double)items[i].value / items[i].weight,
+i});
+sort(ratios.begin(), ratios.end(), greater<pair<double, int>>());
+double total_value = 0.0;
+for (int i = 0; i < n; i++) {
+int idx = ratios[i].second;
+if (capacity >= items[idx].weight) {
+total_value += items[idx].value;
+capacity -= items[idx].weight;
+} else {
+total_value += items[idx].value * ((double)capacity / items[idx].weight);
+break;
+}
+}
+return total_value;
+}
+int main() {
+Item items1[] = {{10, 60}, {20, 100}, {30, 120}};
+cout << fixed << setprecision(2) << fractional_knapsack(items1, 3, 50) << endl;
+Item items2[] = {{5, 50}, {10, 60}, {15, 90}};
+cout << fixed << setprecision(2) << fractional_knapsack(items2, 3, 20) << endl;
+return 0;
+}
+8.a
+#include <iostream>
+#include <climits>
+using namespace std;
+void prims_mst(int graph[][100], int V) {
+int parent[100], key[100];
+bool mst_set[100];
+for (int i = 0; i < V; i++) key[i] = INT_MAX, mst_set[i] = false;
+key[0] = 0; parent[0] = -1;
+for (int count = 0; count < V - 1; count++) {
+int min_key = INT_MAX, u;
+for (int v = 0; v < V; v++) {
+if (!mst_set[v] && key[v] < min_key) min_key = key[v], u = v;
+}
+mst_set[u] = true;
+for (int v = 0; v < V; v++) {
+if (graph[u][v] && !mst_set[v] && graph[u][v] < key[v]) parent[v] = u, key[v] =
+graph[u][v];
+}
+}
+cout << "Edge Weight" << endl;
+int total_weight = 0;
+for (int i = 1; i < V; i++) {
+cout << parent[i] << " - " << i << " " << graph[i][parent[i]] << endl;
+total_weight += graph[i][parent[i]];
+}
+cout << "Total weight: " << total_weight << endl;
+}
+int main() {
+int V = 5;
+int graph[100][100] = {
+{0, 2, 0, 6, 0},
+{2, 0, 3, 8, 5},
+{0, 3, 0, 0, 7},
+{6, 8, 0, 0, 9},
+{0, 5, 7, 9, 0}
+};
+prims_mst(graph, V);
+return 0;
+}
+8.b
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+typedef struct { int src, dest, weight; } Edge;
+int find(int parent[], int i) {
+if (parent[i] == i) return i;
+return find(parent, parent[i]);
+}
+void union_set(int parent[], int rank[], int x, int y) {
+int xroot = find(parent, x), yroot = find(parent, y);
+if (rank[xroot] < rank[yroot]) parent[xroot] = yroot;
+else if (rank[xroot] > rank[yroot]) parent[yroot] = xroot;
+else { parent[yroot] = xroot; rank[xroot]++; }
+}
+void kruskals_mst(Edge *edges, int E, int V) {
+sort(edges, edges + E, [](Edge a, Edge b) { return a.weight < b.weight; });
+int parent[V], rank[V];
+for (int v = 0; v < V; ++v) parent[v] = v, rank[v] = 0;
+vector<Edge> result;
+for (int i = 0; i < E && result.size() < V - 1; i++) {
+int x = find(parent, edges[i].src), y = find(parent, edges[i].dest);
+if (x != y) {
+result.push_back(edges[i]);
+union_set(parent, rank, x, y);
+}
+}
+cout << "Edge Weight" << endl;
+int total_weight = 0;
+for (auto &e : result) {
+cout << e.src << " - " << e.dest << " " << e.weight << endl;
+total_weight += e.weight;
+}
+cout << "Total weight: " << total_weight << endl;
+}
+int main() {
+int V = 5, E = 7;
+Edge edges[] = {
+{0, 1, 2}, {0, 3, 6}, {1, 2, 3}, {1, 3, 8},
+{1, 4, 5}, {2, 4, 7}, {3, 4, 9}
+};
+kruskals_mst(edges, E, V);
+return 0;
+}
+9.a
+#include <iostream>
+#include <climits>
+using namespace std;
+void dijkstra(int graph[][100], int src, int V) {
+int dist[V]; bool sptSet[V];
+for (int i = 0; i < V; i++) dist[i] = INT_MAX, sptSet[i] = false;
+dist[src] = 0;
+for (int count = 0; count < V - 1; count++) {
+int min = INT_MAX, u;
+for (int v = 0; v < V; v++)
+if (!sptSet[v] && dist[v] <= min) min = dist[v], u = v;
+sptSet[u] = true;
+for (int v = 0; v < V; v++)
+if (!sptSet[v] && graph[u][v] && dist[u] != INT_MAX && dist[u] + graph[u][v] <
+dist[v])
+dist[v] = dist[u] + graph[u][v];
+}
+cout << "Vertex Distance from Source" << endl;
+for (int i = 0; i < V; i++) cout << i << " " << dist[i] << endl;
+}
+int main() {
+int V = 5;
+int graph[100][100] = {
+{0, 4, 0, 0, 8},
+{4, 0, 8, 0, 11},
+{0, 8, 0, 7, 0},
+{0, 0, 7, 0, 9},
+{8, 11, 0, 9, 0}
+};
+dijkstra(graph, 0, V);
+return 0;
+}
+9.b
+#include <iostream>
+#include <climits>
+using namespace std;
+typedef struct { int src, dest, weight; } Edge;
+void bellman_ford(int V, int E, Edge *edges, int src) {
+int dist[V];
+for (int i = 0; i < V; i++) dist[i] = INT_MAX / 2;
+dist[src] = 0;
+for (int i = 1; i <= V - 1; i++) {
+for (int j = 0; j < E; j++) {
+int u = edges[j].src, v = edges[j].dest, weight = edges[j].weight;
+if (dist[u] != INT_MAX / 2 && dist[u] + weight < dist[v])
+dist[v] = dist[u] + weight;
+}
+}
+for (int j = 0; j < E; j++) {
+int u = edges[j].src, v = edges[j].dest, weight = edges[j].weight;
+if (dist[u] != INT_MAX / 2 && dist[u] + weight < dist[v]) {
+cout << "Graph contains a negative-weight cycle" << endl;
+return;
+}
+}
+cout << "Vertex Distance from Source" << endl;
+for (int i = 0; i < V; i++) cout << i << " " << dist[i] << endl;
+}
+int main() {
+int V = 5, E = 10;
+Edge edges[] = {
+{0, 1, 6}, {0, 2, 7}, {1, 2, 8}, {1, 3, 5},
+{1, 4, -4}, {2, 3, -3}, {2, 4, 9}, {3, 1, -2},
+{4, 0, 2}, {4, 3, 7}
+};
+bellman_ford(V, E, edges, 0);
+return 0;
+}
+10.a #include <iostream>
+#include <algorithm>
+using namespace std;
+int knapsack_01(int *weights, int *values, int n, int W) {
+int dp[n + 1][W + 1];
+for (int i = 0; i <= n; i++) {
+for (int w = 0; w <= W; w++) {
+if (i == 0 || w == 0) dp[i][w] = 0;
+else if (weights[i - 1] <= w)
+dp[i][w] = max(values[i - 1] + dp[i - 1][w - weights[i - 1]], dp[i - 1][w]);
+else dp[i][w] = dp[i - 1][w];
+}
+}
+return dp[n][W];
+}
+int main() {
+int weights1[] = {2, 3, 4, 5}, values1[] = {3, 4, 5, 6};
+cout << knapsack_01(weights1, values1, 4, 5) << endl;
+int weights2[] = {1, 3, 4, 5}, values2[] = {1, 4, 5, 7};
+cout << knapsack_01(weights2, values2, 4, 7) << endl;
+return 0;
+}
+10.b
+#include <iostream>
+#include <algorithm>
+using namespace std;
+int min_coins(int *coins, int n, int amount) {
+int dp[amount + 1];
+for (int i = 0; i <= amount; i++) dp[i] = amount + 1;
+dp[0] = 0;
+for (int i = 1; i <= amount; i++)
+for (int j = 0; j < n; j++)
+if (coins[j] <= i) dp[i] = min(dp[i], 1 + dp[i - coins[j]]);
+return dp[amount] > amount ? -1 : dp[amount];
+}
+int main() {
+int coins1[] = {1, 5, 6, 9};
+cout << min_coins(coins1, 4, 11) << endl;
+int coins2[] = {2};
+cout << min_coins(coins2, 1, 3) << endl;
+int coins3[] = {1, 2, 5};
+cout << min_coins(coins3, 3, 11) << endl;
+return 0;
+}
+10.c
+#include <iostream>
+#include <algorithm>
+using namespace std;
+int count_ways(int *coins, int n, int amount) {
+int dp[amount + 1];
+for (int i = 0; i <= amount; i++) dp[i] = 0;
+dp[0] = 1;
+for (int i = 0; i < n; i++)
+for (int j = coins[i]; j <= amount; j++)
+dp[j] += dp[j - coins[i]];
+return dp[amount];
+}
+int main() {
+int coins1[] = {1, 2, 3};
+cout << count_ways(coins1, 3, 4) << endl;
+int coins2[] = {2, 5, 3, 6};
+cout << count_ways(coins2, 4, 10) << endl;
+return 0;
+}
+10.d
+#include <iostream>
+#include <algorithm>
+using namespace std;
+int lcs(char *s1, char *s2, int m, int n) {
+int dp[m + 1][n + 1];
+for (int i = 0; i <= m; i++) {
+for (int j = 0; j <= n; j++) {
+if (i == 0 || j == 0) dp[i][j] = 0;
+else if (s1[i - 1] == s2[j - 1]) dp[i][j] = dp[i - 1][j - 1] + 1;
+else dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+}
+}
+return dp[m][n];
+}
+int main() {
+char s1[] = "ABCBDAB", s2[] = "BDCAB";
+cout << lcs(s1, s2, 7, 5) << endl;
+char s3[] = "AGGTAB", s4[] = "GXTXAYB";
+cout << lcs(s3, s4, 6, 7) << endl;
+char s5[] = "ABC", s6[] = "AC";
+cout << lcs(s5, s6, 3, 2) << endl;
+return 0;
+}
+10.e
+#include <iostream>
+#include <algorithm>
+using namespace std;
+int lis(int *arr, int n) {
+int dp[n];
+for (int i = 0; i < n; i++) dp[i] = 1;
+for (int i = 1; i < n; i++) {
+for (int j = 0; j < i; j++) {
+if (arr[i] > arr[j] && dp[i] < dp[j] + 1) {
+dp[i] = dp[j] + 1;
+}
+}
+}
+return *max_element(dp, dp + n);
+}
+int main() {
+int arr1[] = {10, 9, 2, 5, 3, 7, 101, 18};
+cout << lis(arr1, 8) << endl;
+int arr2[] = {0, 1, 0, 3, 2, 3};
+cout << lis(arr2, 6) << endl;
+int arr3[] = {7, 7, 7, 7};
+cout << lis(arr3, 4) << endl;
+return 0;
+}
